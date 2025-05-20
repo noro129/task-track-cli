@@ -11,7 +11,7 @@ public interface ActionTargetMapper {
             case "remove" -> RemoveActionTarget.class;
             case "clean" -> CleanActionTarget.class;
             case "update" -> UpdateActionTarget.class;
-            default -> null;
+            default -> AddActionTarget.class;
         };
     }
 }

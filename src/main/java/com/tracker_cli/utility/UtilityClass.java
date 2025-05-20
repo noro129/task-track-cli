@@ -13,8 +13,8 @@ public class UtilityClass {
         return resultBuilder.toString();
     }
 
-    public static <E extends Enum<E>> boolean isValidEnumValue(Class<E> enumType, String enumValue) {
-        for (E validValue : enumType.getEnumConstants()) {
+    public static boolean isValidEnumValue(Class<? extends Enum<?>> enumType, String enumValue) {
+        for (Enum<?> validValue : enumType.getEnumConstants()) {
             if(validValue.toString().equalsIgnoreCase(enumValue)) return true;
         }
         return false;
