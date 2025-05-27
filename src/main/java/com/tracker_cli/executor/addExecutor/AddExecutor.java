@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import static com.tracker_cli.utility.UtilityClass.getTaskStatusEnumFromValue;
+
 public class AddExecutor extends Executor {
     private final AddActionTarget actionTarget;
 
@@ -88,16 +90,6 @@ public class AddExecutor extends Executor {
         }
 
         return new RuleDetail(firstTaskStatus, firstTaskId, ruleRelation, secondTaskStatus, secondTaskId, date);
-    }
-
-    private TaskStatusEnum getTaskStatusEnumFromValue(String value){
-        return switch (value.toLowerCase()) {
-            case "inprogress" -> TaskStatusEnum.InProgress;
-            case "done" -> TaskStatusEnum.Done;
-            case "started" -> TaskStatusEnum.Started;
-            case "waiting" -> TaskStatusEnum.Waiting;
-            default -> null;
-        };
     }
 
     private RuleEnum getRuleEnumFromValue(String value) {

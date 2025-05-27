@@ -2,6 +2,7 @@ package com.tracker_cli.executor.utility;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.tracker_cli.action.target.ListActionTarget;
 import com.tracker_cli.model.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface DataOperator {
     ObjectMapper mapper = new ObjectMapper()
@@ -100,6 +103,18 @@ public interface DataOperator {
         return true;
     }
 
+    static List<Task> listTasks(Set<TaskStatusEnum> include) {
+        List<Task> taskList;
+        try {
+            taskList = listTasks();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
+            System.out.println(e.getMessage());
+            return null;
+        }
+        return taskList.stream().filter(task -> include.contains(task.getTaskStatus())).toList();
+    }
+
     private static void createDataLocation() {
         (new File(DATA_LOCATION)).mkdirs();
     }
@@ -126,6 +141,8 @@ public interface DataOperator {
         if(TASKS_DATA_FILE.exists()) return mapper.readValue(TASKS_DATA_FILE, new TypeReference<List<Task>>(){});
         else return new ArrayList<>();
     }
+
+
 }
 
 class RuleList {

@@ -1,5 +1,7 @@
 package com.tracker_cli.utility;
 
+import com.tracker_cli.model.TaskStatusEnum;
+
 public class UtilityClass {
 
     public static <E extends Enum<E>> String enumValuesToString(Class<E> enumType) {
@@ -18,6 +20,16 @@ public class UtilityClass {
             if(validValue.toString().equalsIgnoreCase(enumValue)) return true;
         }
         return false;
+    }
+
+    public static TaskStatusEnum getTaskStatusEnumFromValue(String value){
+        return switch (value.toLowerCase()) {
+            case "inprogress" -> TaskStatusEnum.InProgress;
+            case "done" -> TaskStatusEnum.Done;
+            case "started" -> TaskStatusEnum.Started;
+            case "waiting" -> TaskStatusEnum.Waiting;
+            default -> null;
+        };
     }
 
 

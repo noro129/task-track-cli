@@ -1,12 +1,15 @@
 package com.tracker_cli.executor.cleanExecutor;
 
 import com.tracker_cli.action.target.AddActionTarget;
+import com.tracker_cli.action.target.CleanActionTarget;
 import com.tracker_cli.executor.Executor;
 
-public class CleanExecutor extends Executor {
-    private final AddActionTarget actionTarget;
+import java.util.Arrays;
 
-    public CleanExecutor(AddActionTarget actionTarget) {this.actionTarget = actionTarget;}
+public class CleanExecutor extends Executor {
+    private final CleanActionTarget actionTarget;
+
+    public CleanExecutor(CleanActionTarget actionTarget) {this.actionTarget = actionTarget;}
 
     @Override
     public boolean execute(String[] arguments) {
