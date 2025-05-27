@@ -55,8 +55,7 @@ public interface DataOperator {
 
         List<Rule> rules;
         try {
-            if(RULES_DATA_FILE.exists()) rules = mapper.readValue(RULES_DATA_FILE, RuleList.class).getRuleList();
-            else rules = new ArrayList<>();
+            rules = listRules();
 
         } catch (IOException e) {
             System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
@@ -115,6 +114,36 @@ public interface DataOperator {
         return taskList.stream().filter(task -> include.contains(task.getTaskStatus())).toList();
     }
 
+    static List<Rule> listRules(String type, String taskHash) {
+        List<Rule> ruleList;
+        try {
+            ruleList = listRules();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
+            System.out.println(e.getMessage());
+            return null;
+        }
+        return ruleList.stream().filter(rule -> {
+            boolean condition = true;
+            if(type!=null) {
+                condition = rule.getClass() == matchTypeToRule(type);
+            }
+            if(taskHash!=null && !taskHash.isEmpty()) {
+                if(rule instanceof TaskToTaskRule) condition = condition && (((TaskToTaskRule) rule).getSecondTaskHash().equalsIgnoreCase(taskHash) || rule.getId().equalsIgnoreCase(taskHash));
+                else condition = condition && rule.getId().equalsIgnoreCase(taskHash);
+            }
+            return condition;
+        }).toList();
+    }
+
+    private static Class<? extends Rule> matchTypeToRule(String type) {
+        return switch (type.toLowerCase()) {
+            case "tasktotask" -> TaskToTaskRule.class;
+            case "tasktodate" -> TaskToDateRule.class;
+            default -> Rule.class;
+        };
+    }
+
     private static void createDataLocation() {
         (new File(DATA_LOCATION)).mkdirs();
     }
@@ -139,6 +168,11 @@ public interface DataOperator {
 
     private static List<Task> listTasks() throws IOException {
         if(TASKS_DATA_FILE.exists()) return mapper.readValue(TASKS_DATA_FILE, new TypeReference<List<Task>>(){});
+        else return new ArrayList<>();
+    }
+
+    private static List<Rule> listRules() throws IOException {
+        if(RULES_DATA_FILE.exists()) return mapper.readValue(RULES_DATA_FILE, RuleList.class).getRuleList();
         else return new ArrayList<>();
     }
 

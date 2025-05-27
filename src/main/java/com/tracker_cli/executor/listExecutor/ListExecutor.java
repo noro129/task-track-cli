@@ -4,6 +4,7 @@ import com.tracker_cli.action.target.ListActionTarget;
 import com.tracker_cli.executor.Executor;
 import com.tracker_cli.executor.utility.DataOperator;
 import com.tracker_cli.executor.utility.Printer;
+import com.tracker_cli.model.Rule;
 import com.tracker_cli.model.Task;
 import com.tracker_cli.model.TaskStatusEnum;
 import com.tracker_cli.utility.UtilityClass;
@@ -53,6 +54,44 @@ public class ListExecutor extends Executor {
     }
 
     private boolean listRules(String[] arguments) {
+        if(arguments.length != 0 && arguments.length !=2 && arguments.length!=4) {
+            System.err.println("ERROR: invalid command arguments." +
+                    "\n valid flags: " +
+                    "\n\t--type          optional, accepts either taskToTask or TaskToDate values." +
+                    "\n\t--task-hash     optional, list only rules applied on a specific task, by providing the task id.");
+            return false;
+        }
+        String type = null;
+        String taskHash = null;
+        for(int i=0; i<arguments.length; i+=2) {
+            if(arguments[i].equalsIgnoreCase("--task-hash")) taskHash = arguments[i+1];
+            if(arguments[i].equalsIgnoreCase("--type")) type = arguments[i+1];
+        }
+
+        if(arguments.length == 4 && (type == null || taskHash == null)) {
+            System.err.println("ERROR: invalid command arguments." +
+                    "\n valid flags: " +
+                    "\n\t--type          optional, accepts either taskToTask or TaskToDate values." +
+                    "\n\t--task-hash     optional, list only rules applied on a specific task, by providing the task id.");
+            return false;
+        }
+
+        if(arguments.length == 2 && type == null && taskHash == null) {
+            System.err.println("ERROR: invalid command arguments." +
+                    "\n valid flags: " +
+                    "\n\t--type          optional, accepts either taskToTask or TaskToDate values." +
+                    "\n\t--task-hash     optional, list only rules applied on a specific task, by providing the task id.");
+            return false;
+        }
+        if (type!=null && (!type.equalsIgnoreCase("tasktotask") && !type.equalsIgnoreCase("tasktodate"))) {
+            System.err.println("ERROR: invalid type option "+type+", the only valid options are: taskToTask, taskToDate");
+            return false;
+        }
+
+        List<Rule> ruleList = DataOperator.listRules(type, taskHash);
+
+        if(ruleList == null) return false;
+        Printer.printRules(ruleList);
         return true;
     }
 }
