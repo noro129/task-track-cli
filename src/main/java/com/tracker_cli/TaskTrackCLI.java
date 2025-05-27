@@ -46,7 +46,7 @@ public class TaskTrackCLI {
                 .executeAction(targetValue, Arrays.copyOfRange(args, 2, args.length));
 
         if(result) System.out.println("INFO: command executed successfully");
-        else System.err.println("ERROR: could not execute the command. Retry Again");
+        else System.err.println("ERROR: could not execute the command.");
     }
 
 
