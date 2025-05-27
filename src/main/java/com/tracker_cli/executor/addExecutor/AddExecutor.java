@@ -55,6 +55,7 @@ public class AddExecutor extends Executor {
         }
 
         if(taskName==null) {
+            System.err.println("ERROR: missing task name field --task-name");
             return null;
         }
         return new TaskDetail(taskName, taskStatus);
