@@ -28,9 +28,7 @@ public interface DataOperator {
 
         List<Task> tasks;
         try {
-            if(TASKS_DATA_FILE.exists()) tasks = mapper.readValue(TASKS_DATA_FILE, new TypeReference<List<Task>>(){});
-            else tasks = new ArrayList<>();
-
+            tasks = listTasks();
         } catch (IOException e) {
             System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
             System.out.println(e.getMessage());
@@ -63,6 +61,12 @@ public interface DataOperator {
             return false;
         }
 
+        if(!taskExists(ruleDetail.getFirstTaskHash())) {
+            System.err.println("ERROR: task with id "+ruleDetail.getFirstTaskHash()+" does not exist");
+            return false;
+        }
+
+
         Rule rule;
         if(ruleDetail.getDate() != null) {
             rule = new TaskToDateRule(Long.toHexString(System.currentTimeMillis()).toUpperCase(),
@@ -71,6 +75,10 @@ public interface DataOperator {
                     ruleDetail.getRuleRelation(),
                     ruleDetail.getDate());
         } else {
+            if(!taskExists(ruleDetail.getSecondTaskHash())) {
+                System.err.println("ERROR: task with id "+ruleDetail.getSecondTaskHash()+" does not exist");
+                return false;
+            }
             rule = new TaskToTaskRule(Long.toHexString(System.currentTimeMillis()).toUpperCase(),
                     ruleDetail.getFirstTaskStatus(),
                     ruleDetail.getFirstTaskHash(),
@@ -97,11 +105,26 @@ public interface DataOperator {
     }
 
     private static boolean taskExists(String taskId) {
-        return true;
+        List<Task> taskList;
+        try {
+            taskList = listTasks();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
+            return false;
+        }
+        for(Task task : taskList) {
+            if(task.getId().equalsIgnoreCase(taskId)) return true;
+        }
+        return false;
     }
 
     private static boolean createsDeadLockDependency(RuleDetail ruleDetail) {
         return false;
+    }
+
+    private static List<Task> listTasks() throws IOException {
+        if(TASKS_DATA_FILE.exists()) return mapper.readValue(TASKS_DATA_FILE, new TypeReference<List<Task>>(){});
+        else return new ArrayList<>();
     }
 }
 
