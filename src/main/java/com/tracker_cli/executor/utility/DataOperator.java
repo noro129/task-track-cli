@@ -137,8 +137,14 @@ public interface DataOperator {
     static boolean cleanTasks(boolean showFirst, CleanActionTarget cleanAction) {
         TaskStatusEnum taskStatus = CleanStatusMapper.getTaskStatusFromCleanTarget(cleanAction);
         if (showFirst) {
-            if(taskStatus==null) Printer.printTasks(listTasks(new HashSet<>(List.of(TaskStatusEnum.values()))));
-            else Printer.printTasks(listTasks(new HashSet<>(Collections.singleton(taskStatus))));
+            if(taskStatus==null) {
+                Printer.printTasks(listTasks(new HashSet<>(List.of(TaskStatusEnum.values()))));
+                deleteRulesByTask(listTasks(new HashSet<>(List.of(TaskStatusEnum.values()))), true);
+            }
+            else {
+                Printer.printTasks(listTasks(new HashSet<>(Collections.singleton(taskStatus))));
+                deleteRulesByTask(listTasks(new HashSet<>(Collections.singleton(taskStatus))), true);
+            }
             return true;
         } else {
             List<Task> taskList;
@@ -150,6 +156,7 @@ public interface DataOperator {
                 return false;
             }
 
+            if(!deleteRulesByTask(taskList.stream().filter(task -> task.getTaskStatus()==taskStatus).toList(), false)) return false;
             taskList = taskList.stream().filter(task -> task.getTaskStatus()!=taskStatus).toList();
 
             try {
@@ -158,6 +165,7 @@ public interface DataOperator {
                 System.err.println("ERROR: could not remove "+taskStatus.toString()+" tasks.");
                 return false;
             }
+            System.out.println("INFO: '"+cleanAction.toString()+"' tasks deleted successfully.");
             return true;
         }
     }
@@ -188,6 +196,7 @@ public interface DataOperator {
         return false;
     }
 
+    //TODO implement circular dependency check methid later
     private static boolean createsDeadLockDependency(RuleDetail ruleDetail) {
         return false;
     }
@@ -202,6 +211,45 @@ public interface DataOperator {
         else return new ArrayList<>();
     }
 
+    private static boolean deleteRulesByTask(List<Task> taskList, boolean showFirst) {
+        if(taskList == null) return true;
+        Set<String> taskHashes = new HashSet<>();
+        for(Task task : taskList) taskHashes.add(task.getId());
+        List<Rule> ruleList;
+        try {
+            ruleList = listRules();
+        } catch (IOException e) {
+            return false;
+        }
+        if(showFirst) {
+            System.out.println("INFO: listing rules selected to be deleted.");
+            Printer.printRules(ruleList.stream().filter(rule -> {
+                if (rule instanceof TaskToDateRule) return taskHashes.contains(rule.getFirstTaskHash());
+                else {
+                    return taskHashes.contains(rule.getFirstTaskHash()) || taskHashes.contains(((TaskToTaskRule) rule).getSecondTaskHash());
+                }
+            }).toList());
+            return true;
+        }
+
+        ruleList = ruleList.stream().filter(rule -> {
+            if (rule instanceof TaskToDateRule) return !taskHashes.contains(rule.getFirstTaskHash());
+            else {
+                return !taskHashes.contains(rule.getFirstTaskHash()) && !taskHashes.contains(((TaskToTaskRule) rule).getSecondTaskHash());
+            }
+        }).toList();
+
+        try {
+            RuleList ruleListWrapper = new RuleList();
+            ruleListWrapper.setRuleList(ruleList);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(RULES_DATA_FILE, ruleListWrapper);
+        } catch (IOException e) {
+            System.err.println("ERROR: could not remove associated rules");
+            return false;
+        }
+
+        return true;
+    }
 
 }
 

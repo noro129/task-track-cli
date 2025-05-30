@@ -11,6 +11,7 @@ import java.util.List;
 public interface Printer {
 
     static void printTasks(List<Task> taskList) {
+        if(taskList == null) return;
         printInWidthSize("Id", 30 ,false, true, '_');
         System.out.print("|");
         printInWidthSize("Task", 50 ,false, true, '_');
