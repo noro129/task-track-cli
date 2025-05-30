@@ -2,6 +2,7 @@ package com.tracker_cli.executor.utility;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.tracker_cli.action.target.CleanActionTarget;
 import com.tracker_cli.action.target.ListActionTarget;
 import com.tracker_cli.model.*;
 
@@ -10,10 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface DataOperator {
     ObjectMapper mapper = new ObjectMapper()
@@ -108,7 +106,7 @@ public interface DataOperator {
             taskList = listTasks();
         } catch (IOException e) {
             System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return null;
         }
         return taskList.stream().filter(task -> include.contains(task.getTaskStatus())).toList();
@@ -134,6 +132,34 @@ public interface DataOperator {
             }
             return condition;
         }).toList();
+    }
+
+    static boolean cleanTasks(boolean showFirst, CleanActionTarget cleanAction) {
+        TaskStatusEnum taskStatus = CleanStatusMapper.getTaskStatusFromCleanTarget(cleanAction);
+        if (showFirst) {
+            if(taskStatus==null) Printer.printTasks(listTasks(new HashSet<>(List.of(TaskStatusEnum.values()))));
+            else Printer.printTasks(listTasks(new HashSet<>(Collections.singleton(taskStatus))));
+            return true;
+        } else {
+            List<Task> taskList;
+            try {
+                taskList = listTasks();
+            } catch (IOException e) {
+                System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
+                System.err.println(e.getMessage());
+                return false;
+            }
+
+            taskList = taskList.stream().filter(task -> task.getTaskStatus()!=taskStatus).toList();
+
+            try {
+                mapper.writerWithDefaultPrettyPrinter().writeValue(TASKS_DATA_FILE, taskList);
+            } catch (IOException e) {
+                System.err.println("ERROR: could not remove "+taskStatus.toString()+" tasks.");
+                return false;
+            }
+            return true;
+        }
     }
 
     private static Class<? extends Rule> matchTypeToRule(String type) {
