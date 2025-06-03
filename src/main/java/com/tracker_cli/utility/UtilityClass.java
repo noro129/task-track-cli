@@ -23,6 +23,7 @@ public class UtilityClass {
     }
 
     public static TaskStatusEnum getTaskStatusEnumFromValue(String value){
+        if(value==null) return null;
         return switch (value.toLowerCase()) {
             case "inprogress" -> TaskStatusEnum.InProgress;
             case "done" -> TaskStatusEnum.Done;

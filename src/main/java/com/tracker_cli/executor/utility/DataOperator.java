@@ -3,7 +3,6 @@ package com.tracker_cli.executor.utility;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tracker_cli.action.target.CleanActionTarget;
-import com.tracker_cli.action.target.ListActionTarget;
 import com.tracker_cli.model.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public interface DataOperator {
     ObjectMapper mapper = new ObjectMapper()
@@ -32,7 +32,7 @@ public interface DataOperator {
             tasks = listTasks();
         } catch (IOException e) {
             System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return false;
         }
 
@@ -57,7 +57,7 @@ public interface DataOperator {
 
         } catch (IOException e) {
             System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return false;
         }
 
@@ -118,7 +118,7 @@ public interface DataOperator {
             ruleList = listRules();
         } catch (IOException e) {
             System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return null;
         }
         return ruleList.stream().filter(rule -> {
@@ -145,7 +145,6 @@ public interface DataOperator {
                 Printer.printTasks(listTasks(new HashSet<>(Collections.singleton(taskStatus))));
                 deleteRulesByTask(listTasks(new HashSet<>(Collections.singleton(taskStatus))), true);
             }
-            return true;
         } else {
             List<Task> taskList;
             try {
@@ -166,8 +165,38 @@ public interface DataOperator {
                 return false;
             }
             System.out.println("INFO: '"+cleanAction.toString()+"' tasks deleted successfully.");
-            return true;
         }
+        return true;
+    }
+
+    static boolean updateTask(String taskHash, String newTaskMessage, TaskStatusEnum taskStatus) {
+        List<Task> taskList;
+        AtomicBoolean taskFound = new AtomicBoolean(false);
+        try {
+            taskList = listTasks();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
+            System.err.println(e.getMessage());
+            return false;
+        }
+        taskList.forEach(task -> {
+            if(task.getId().equalsIgnoreCase(taskHash)){
+                if(newTaskMessage!=null) task.setTaskName(newTaskMessage);
+                if(taskStatus!=null) task.setTaskStatus(taskStatus);
+                taskFound.set(true);
+            }
+        });
+        if(taskFound.get()) {
+            try {
+                mapper.writerWithDefaultPrettyPrinter().writeValue(TASKS_DATA_FILE, taskList);
+            } catch (IOException e) {
+                System.err.println("ERROR: error while saving the task "+taskHash+" with the new modification.");
+                return false;
+            }
+        } else {
+            System.err.println("ERROR: task with id "+taskHash+" does not exist");
+        }
+        return taskFound.get();
     }
 
     private static Class<? extends Rule> matchTypeToRule(String type) {
@@ -196,7 +225,7 @@ public interface DataOperator {
         return false;
     }
 
-    //TODO implement circular dependency check methid later
+    //TODO implement circular dependency check method later
     private static boolean createsDeadLockDependency(RuleDetail ruleDetail) {
         return false;
     }

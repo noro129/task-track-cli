@@ -22,7 +22,6 @@ public class CleanExecutor extends Executor {
             return false;
         }
 
-        DataOperator.cleanTasks(showFirst, actionTarget);
-        return true;
+        return DataOperator.cleanTasks(showFirst, actionTarget);
     }
 }
