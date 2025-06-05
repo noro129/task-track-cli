@@ -97,7 +97,20 @@ public interface DataOperator {
                     ruleDetail.getRuleRelation(),
                     ruleDetail.getSecondTaskStatus(),
                     ruleDetail.getSecondTaskHash());
-
+            rules.forEach(rule1 -> {
+                if(rule1 instanceof TaskToTaskRule) {
+                    if (rule1.getFirstTaskStatus()==ruleDetail.getFirstTaskStatus() &&
+                    rule1.getFirstTaskHash().equalsIgnoreCase(ruleDetail.getFirstTaskHash()) &&
+                    rule1.getRuleRelation() == ruleDetail.getRuleRelation() &&
+                    ((TaskToTaskRule) rule1).getSecondTaskHash().equalsIgnoreCase(ruleDetail.getSecondTaskHash()) &&
+                    ((TaskToTaskRule) rule1).getSecondTaskStatus() == ruleDetail.getSecondTaskStatus()) {
+                        overrideRule.set(true);
+                        System.out.println("INFO: rule already exists.");
+                        System.out.println("\texisting rule: "+rule1.toString());
+                    }
+                }
+            });
+            if(overrideRule.get()) return true;
         }
 
 
