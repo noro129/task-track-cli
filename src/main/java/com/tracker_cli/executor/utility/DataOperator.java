@@ -66,6 +66,7 @@ public interface DataOperator {
             return false;
         }
 
+        AtomicBoolean overrideRule = new AtomicBoolean(false);
 
         Rule rule;
         if(ruleDetail.getDate() != null) {
@@ -74,6 +75,17 @@ public interface DataOperator {
                     ruleDetail.getFirstTaskHash(),
                     ruleDetail.getRuleRelation(),
                     ruleDetail.getDate());
+            rules.forEach(rule1 -> {
+                if(rule1 instanceof TaskToDateRule) {
+                    if(Objects.equals(rule1.getFirstTaskHash(), rule.getFirstTaskHash()) && rule1.getRuleRelation()==rule.getRuleRelation() && rule1.getFirstTaskStatus()==rule.getFirstTaskStatus()) {
+                        System.out.println("INFO: similar rule already exists.");
+                        System.out.println("\texisting rule: "+rule1.toString());
+                        System.out.println("\tnew rule     : "+ruleDetail.toString());
+                        overrideRule.set(true);
+                        ((TaskToDateRule) rule1).setDate(ruleDetail.getDate());
+                    }
+                }
+            });
         } else {
             if(!taskExists(ruleDetail.getSecondTaskHash())) {
                 System.err.println("ERROR: task with id "+ruleDetail.getSecondTaskHash()+" does not exist");
@@ -85,9 +97,11 @@ public interface DataOperator {
                     ruleDetail.getRuleRelation(),
                     ruleDetail.getSecondTaskStatus(),
                     ruleDetail.getSecondTaskHash());
+
         }
 
-        rules.add(rule);
+
+        if(!overrideRule.get()) rules.add(rule);
 
         try {
             RuleList ruleList = new RuleList();

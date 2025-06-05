@@ -69,4 +69,21 @@ public class RuleDetail {
     public void setDate(LocalDate date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+        if(getDate()==null) return "RuleDetail{" +
+                "  firstTaskStatus=" + firstTaskStatus +
+                ", firstTaskHash='" + firstTaskHash + '\'' +
+                ", ruleRelation=" + ruleRelation +
+                ", secondTaskStatus=" + secondTaskStatus +
+                ", secondTaskHash='" + secondTaskHash + '\'' +
+                '}';
+        return "RuleDetail{" +
+                "  firstTaskStatus=" + firstTaskStatus +
+                ", firstTaskHash='" + firstTaskHash + '\'' +
+                ", ruleRelation=" + ruleRelation +
+                ", date=" + date +
+                '}';
+    }
 }
