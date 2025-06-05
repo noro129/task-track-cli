@@ -12,6 +12,8 @@ import com.tracker_cli.utility.UtilityClass;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static com.tracker_cli.utility.UtilityClass.getTaskStatusEnumFromValue;
 
@@ -71,8 +73,20 @@ public class AddExecutor extends Executor {
             return null;
         }
         TaskStatusEnum firstTaskStatus = getTaskStatusEnumFromValue(arguments[0]);
+        if(firstTaskStatus==null) {
+            System.err.print("ERROR: invalid task status '"+arguments[0]+"', valid task status are: ");
+            for (TaskStatusEnum relation : TaskStatusEnum.values()) {
+                if(relation != TaskStatusEnum.Waiting) System.err.print(relation+", ");
+            }
+            System.err.println();
+            return null;
+        }
         String firstTaskId = arguments[1].toUpperCase();
         RuleEnum ruleRelation = getRuleEnumFromValue(arguments[2]);
+        if(ruleRelation==null) {
+            System.err.println("ERROR: invalid rule relation '"+arguments[2]+"', valid rule relations are: "+UtilityClass.enumValuesToString(RuleEnum.class));
+            return null;
+        }
         LocalDate date= null;
         TaskStatusEnum secondTaskStatus=null;
         String secondTaskId=null;
@@ -87,6 +101,14 @@ public class AddExecutor extends Executor {
             }
         } else {
             secondTaskStatus = getTaskStatusEnumFromValue(arguments[3]);
+            if(secondTaskStatus==null) {
+                System.err.print("ERROR: invalid task status '"+arguments[3]+"', valid task status are: ");
+                for (TaskStatusEnum relation : TaskStatusEnum.values()) {
+                    if(relation != TaskStatusEnum.Waiting) System.err.print(relation+", ");
+                }
+                System.err.println();
+                return null;
+            }
             secondTaskId = arguments[4].toUpperCase();
         }
 
