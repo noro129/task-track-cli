@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public interface DataOperator {
     ObjectMapper mapper = new ObjectMapper()
@@ -224,6 +225,45 @@ public interface DataOperator {
             System.err.println("ERROR: task with id "+taskHash+" does not exist");
         }
         return taskFound.get();
+    }
+
+    static boolean removeTask(String hash) {
+        List<Task> taskList;
+        AtomicReference<Task> taskToRemove = new AtomicReference<>(null);
+
+
+        try {
+            taskList = listTasks();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read tasks data file: "+TASKS_DATA_FILE.getAbsolutePath());
+            System.err.println(e.getMessage());
+            return false;
+        }
+
+        taskList = taskList.stream().filter(task -> {
+            if(task.getId().equals(hash.toUpperCase())) {
+                taskToRemove.set(task);
+            }
+            return !task.getId().equals(hash.toUpperCase());
+        }).toList();
+
+        if(taskToRemove.get() == null) {
+            System.out.println("INFO: task with hash "+hash+" does not exist.");
+            return true;
+        }
+
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(TASKS_DATA_FILE, taskList);
+        } catch (IOException e) {
+            System.err.println("ERROR: could not delete task with hash: "+hash);
+            return false;
+        }
+        deleteRulesByTask(Collections.singletonList(taskToRemove.get()), false);
+        return true;
+    }
+
+    static boolean removeRule(String hash) {
+        return true;
     }
 
     private static Class<? extends Rule> matchTypeToRule(String type) {
