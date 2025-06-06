@@ -263,6 +263,27 @@ public interface DataOperator {
     }
 
     static boolean removeRule(String hash) {
+        List<Rule> ruleList;
+
+        try {
+            ruleList = listRules();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
+            System.err.println(e.getMessage());
+            return false;
+        }
+
+        ruleList = ruleList.stream().filter(rule -> !rule.getId().equals(hash.toUpperCase())).toList();
+
+        try {
+            RuleList ruleListWrapper = new RuleList();
+            ruleListWrapper.setRuleList(ruleList);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(RULES_DATA_FILE, ruleListWrapper);
+        } catch (IOException e) {
+            System.err.println("ERROR: could not delete rule with hash: "+hash);
+            return false;
+        }
+
         return true;
     }
 
