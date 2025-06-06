@@ -189,7 +189,7 @@ public interface DataOperator {
             try {
                 mapper.writerWithDefaultPrettyPrinter().writeValue(TASKS_DATA_FILE, taskList);
             } catch (IOException e) {
-                System.err.println("ERROR: could not remove "+taskStatus.toString()+" tasks.");
+                System.err.println("ERROR: could not remove "+cleanAction.toString()+" tasks.");
                 return false;
             }
             System.out.println("INFO: '"+cleanAction.toString()+"' tasks deleted successfully.");
@@ -227,7 +227,7 @@ public interface DataOperator {
         return taskFound.get();
     }
 
-    static boolean removeTask(String hash) {
+    static boolean removeTask(String hash, boolean safeCheck) {
         List<Task> taskList;
         AtomicReference<Task> taskToRemove = new AtomicReference<>(null);
 
@@ -247,6 +247,12 @@ public interface DataOperator {
             return !task.getId().equals(hash.toUpperCase());
         }).toList();
 
+        if(safeCheck) {
+            System.out.println("INFO: task selected to be deleted.");
+            Printer.printTasks(Collections.singletonList(taskToRemove.get()));
+            deleteRulesByTask(Collections.singletonList(taskToRemove.get()), true);
+            return true;
+        }
         if(taskToRemove.get() == null) {
             System.out.println("INFO: task with hash "+hash+" does not exist.");
             return true;

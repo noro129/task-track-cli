@@ -11,15 +11,27 @@ public class RemoveExecutor extends Executor {
 
     @Override
     public boolean execute(String[] arguments) {
-        if(arguments.length!=1) {
-            System.err.println("ERROR: invalid command, valid command form is:" +
-                    "\n\t remove <task or rule> <task-hash or rule-hash>");
+        if(arguments.length!=1 && arguments.length!=2) {
+            System.err.println("ERROR: invalid command, valid command forms are:" +
+                    "\n\t remove <task or rule> <task-hash or rule-hash>" +
+                    "\n\t remove <task or rule> <task-hash or rule-hash> --safe-check");
             return false;
         }
         String hash = arguments[0].toUpperCase();
+        boolean safeCheck = false;
+        if(arguments.length==2) {
+            if(arguments[1].equals("--safe-check")) {
+                safeCheck = true;
+            } else {
+                System.err.println("ERROR: invalid command, valid command forms are:" +
+                        "\n\t remove <task or rule> <task-hash or rule-hash>" +
+                        "\n\t remove <task or rule> <task-hash or rule-hash> --safe-check");
+                return false;
+            }
+        }
         return switch (actionTarget) {
             case RemoveActionTarget.RULE -> DataOperator.removeRule(hash);
-            case RemoveActionTarget.TASK -> DataOperator.removeTask(hash);
+            case RemoveActionTarget.TASK -> DataOperator.removeTask(hash, safeCheck);
         };
     }
 }
