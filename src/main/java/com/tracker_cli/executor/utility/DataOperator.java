@@ -247,16 +247,18 @@ public interface DataOperator {
             return !task.getId().equals(hash.toUpperCase());
         }).toList();
 
+        if(taskToRemove.get() == null) {
+            System.out.println("INFO: task with hash "+hash+" does not exist.");
+            return true;
+        }
+
         if(safeCheck) {
             System.out.println("INFO: task selected to be deleted.");
             Printer.printTasks(Collections.singletonList(taskToRemove.get()));
             deleteRulesByTask(Collections.singletonList(taskToRemove.get()), true);
             return true;
         }
-        if(taskToRemove.get() == null) {
-            System.out.println("INFO: task with hash "+hash+" does not exist.");
-            return true;
-        }
+
 
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(TASKS_DATA_FILE, taskList);
@@ -268,8 +270,9 @@ public interface DataOperator {
         return true;
     }
 
-    static boolean removeRule(String hash) {
+    static boolean removeRule(String hash, boolean safeCheck) {
         List<Rule> ruleList;
+        AtomicReference<Rule> ruleToRemove = new AtomicReference<>(null);
 
         try {
             ruleList = listRules();
@@ -279,8 +282,20 @@ public interface DataOperator {
             return false;
         }
 
-        ruleList = ruleList.stream().filter(rule -> !rule.getId().equals(hash.toUpperCase())).toList();
+        ruleList = ruleList.stream().filter(rule -> {
+            if(rule.getId().equals(hash.toUpperCase())) ruleToRemove.set(rule);
+            return !rule.getId().equals(hash.toUpperCase());
+        }).toList();
 
+        if(ruleToRemove.get() == null) {
+            System.out.println("INFO: rule with hash "+hash+" does not exist.");
+            return true;
+        }
+        if(safeCheck) {
+            System.out.println("INFO: rule selected to be deleted.");
+            Printer.printRules(Collections.singletonList(ruleToRemove.get()));
+            return true;
+        }
         try {
             RuleList ruleListWrapper = new RuleList();
             ruleListWrapper.setRuleList(ruleList);

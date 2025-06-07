@@ -30,7 +30,7 @@ public class RemoveExecutor extends Executor {
             }
         }
         return switch (actionTarget) {
-            case RemoveActionTarget.RULE -> DataOperator.removeRule(hash);
+            case RemoveActionTarget.RULE -> DataOperator.removeRule(hash, safeCheck);
             case RemoveActionTarget.TASK -> DataOperator.removeTask(hash, safeCheck);
         };
     }
