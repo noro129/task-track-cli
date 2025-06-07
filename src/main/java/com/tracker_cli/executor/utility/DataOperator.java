@@ -67,6 +67,10 @@ public interface DataOperator {
             return false;
         }
 
+        if(createsDeadLockDependency(ruleDetail)) {
+            System.err.println("ERROR: cannot add the rule "+ruleDetail+", CAUSE ---> creating circular dependency.");
+        }
+
         AtomicBoolean overrideRule = new AtomicBoolean(false);
 
         Rule rule;
@@ -336,7 +340,16 @@ public interface DataOperator {
 
     //TODO implement circular dependency check method later
     private static boolean createsDeadLockDependency(RuleDetail ruleDetail) {
-        return false;
+        List<Rule> ruleList;
+        try {
+            ruleList = listRules();
+        } catch (IOException e) {
+            System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
+            System.err.println(e.getMessage());
+            return false;
+        }
+
+        return CircularDependencyDetector.createsDeadLockDependency(ruleDetail, ruleList);
     }
 
     private static List<Task> listTasks() throws IOException {
