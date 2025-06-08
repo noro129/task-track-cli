@@ -4,11 +4,11 @@
 
 ## ✨ Features
 
-- Create, remove, and list tasks
+- Create, remove, and list tasks or rules
 - Update task status: `Waiting`, `Started`, `In Progress`, `Done`
-- Define rules between tasks:
-    - Example: A task can only start before another is done
-    - Example: A task must start before a specific date
+- Define rules:
+    - Task to Task rules - Example: A task can only start before another is done
+    - Task to Date rules - Example: A task must start before a specific date
 - Clean command for bulk deletions:
     - Delete all tasks with a specific status (e.g. all `Done` tasks)
     - Delete all rules associated with a specific task
