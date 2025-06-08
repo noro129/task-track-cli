@@ -46,6 +46,7 @@ public interface DataOperator {
             System.err.println("ERROR: could not add task "+task);
             return false;
         }
+        System.out.println("INFO: task added successfully HASH{"+task.getId()+"}");
         return true;
     }
 
@@ -129,6 +130,7 @@ public interface DataOperator {
             System.err.println("ERROR: could not add rule: "+rule);
             return false;
         }
+        System.out.println("INFO: new rule added successfully HASH{"+rule.getId()+"}");
         return true;
     }
 
