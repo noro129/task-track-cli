@@ -52,6 +52,12 @@ public interface DataOperator {
 
     static boolean addRule(RuleDetail ruleDetail){
         if(!RULES_DATA_FILE.exists()) createDataLocation();
+        if(ruleDetail.getDate() == null) {
+            if(ruleDetail.getFirstTaskHash().equalsIgnoreCase(ruleDetail.getSecondTaskHash())) {
+                System.err.println("ERROR: Invalid rule — a task cannot define a rule about its own status flow.");
+                return false;
+            }
+        }
 
         List<Rule> rules;
         try {
