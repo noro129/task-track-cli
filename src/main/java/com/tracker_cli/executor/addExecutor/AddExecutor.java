@@ -73,8 +73,11 @@ public class AddExecutor extends Executor {
             return null;
         }
         TaskStatusEnum firstTaskStatus = getTaskStatusEnumFromValue(arguments[0]);
-        if(firstTaskStatus==null) {
-            System.err.print("ERROR: invalid task status '"+arguments[0]+"', valid task status are: ");
+        if(firstTaskStatus==null || firstTaskStatus == TaskStatusEnum.Waiting) {
+            if(firstTaskStatus != null)
+                System.err.print("ERROR: 'waiting' task status cannot be included in rule creation, valid rule task status are: ");
+            else
+                System.err.print("ERROR: invalid rule task status '"+arguments[0]+"', valid rule task status are: ");
             for (TaskStatusEnum relation : TaskStatusEnum.values()) {
                 if(relation != TaskStatusEnum.Waiting) System.err.print(relation+", ");
             }
