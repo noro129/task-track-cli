@@ -18,7 +18,9 @@ public interface CircularDependencyDetector {
             relativeRulesList.addAll(filterRelatives(ruleDetail.getSecondTaskHash(), ruleList));
         }
         System.out.println("INFO: related rules are "+relativeRulesList);
-        return false;
+        TaskDependencyGraph taskGraph = new TaskDependencyGraph(relativeRulesList, ruleDetail);
+        System.out.println(taskGraph);
+        return taskGraph.retrieveExistingCycle()!=null;
     }
 
     private static Set<Rule> filterRelatives(String hash, List<Rule> ruleList) {
