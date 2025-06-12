@@ -5,10 +5,7 @@ import com.tracker_cli.model.RuleDetail;
 import com.tracker_cli.model.TaskToTaskRule;
 
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public interface CircularDependencyDetector {
 
@@ -17,10 +14,12 @@ public interface CircularDependencyDetector {
         if(ruleDetail.getDate() == null) {
             relativeRulesList.addAll(filterRelatives(ruleDetail.getSecondTaskHash(), ruleList));
         }
-        System.out.println("INFO: related rules are "+relativeRulesList);
         TaskDependencyGraph taskGraph = new TaskDependencyGraph(relativeRulesList, ruleDetail);
-        System.out.println(taskGraph);
-        return taskGraph.retrieveExistingCycle()!=null;
+        Stack<String> cycle = taskGraph.retrieveExistingCycle();
+        if(!cycle.isEmpty()) {
+            System.out.println("detected a dependency cycle: " +cycle);
+        }
+        return !cycle.isEmpty();
     }
 
     private static Set<Rule> filterRelatives(String hash, List<Rule> ruleList) {

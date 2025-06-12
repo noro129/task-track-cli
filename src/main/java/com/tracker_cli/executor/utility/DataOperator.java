@@ -76,6 +76,7 @@ public interface DataOperator {
 
         if(createsDeadLockDependency(ruleDetail)) {
             System.err.println("ERROR: cannot add the rule "+ruleDetail+", CAUSE ---> creating circular dependency.");
+            return false;
         }
 
         AtomicBoolean overrideRule = new AtomicBoolean(false);

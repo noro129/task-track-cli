@@ -62,9 +62,21 @@ public class TaskDependencyGraph {
         addNaturalDatesOrderingEdges();
     }
 
-    public List<String> retrieveExistingCycle() {
-        return null;
+    public Stack<String> retrieveExistingCycle() {
+        Stack<String> result = new Stack<>();
+        Set<String> visited = new HashSet<>();
+        for(String node : taskGraph.keySet()){
+            if(!visited.contains(node)) {
+                visited.add(node);
+                result.add(node);
+                if(dfs(taskGraph.get(node), visited, result, new HashSet<>(result))) break;
+                result.pop();
+            }
+        }
+        return result;
     }
+
+
 
     @Override
     public String toString() {
@@ -89,6 +101,26 @@ public class TaskDependencyGraph {
                 taskGraph.get("date "+includedDates.get(i)).add("date "+includedDates.get(j));
             }
         }
+    }
+
+    private boolean dfs(List<String> nodes, Set<String> visited, Stack<String> path, Set<String> pathNodes){
+        for (String node : nodes) {
+            if(pathNodes.contains(node)) {
+                path.add(node);
+                return true;
+            }
+            if(!visited.contains(node)) {
+                path.add(node);
+                visited.add(node);
+                pathNodes.add(node);
+                if(dfs(taskGraph.get(node), visited, path, pathNodes)) return true;
+                else {
+                    path.pop();
+                    pathNodes.remove(node);
+                }
+            }
+        }
+        return false;
     }
 
 }
