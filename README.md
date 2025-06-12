@@ -17,6 +17,7 @@
 - Define rules:
     - Task to Task rules - Example: A task can only start before another is done
     - Task to Date rules - Example: A task must start before a specific date
+- Built-in circular rules dependency detection and prevention mechanism
 - Clean command for bulk deletions:
     - Delete all tasks with a specific status (e.g. all `Done` tasks)
     - Delete all rules associated with a specific task

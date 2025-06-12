@@ -35,30 +35,6 @@ public class TaskDependencyGraph {
                 }
             }
         }
-
-        String firstTaskKey = targetRule.getFirstTaskStatus()+" "+targetRule.getFirstTaskHash().toUpperCase();
-        if(!taskGraph.containsKey(firstTaskKey)) {
-            taskGraph.put(firstTaskKey, new ArrayList<>());
-        }
-        if(targetRule.getDate() == null) {
-            String secondTaskKey = targetRule.getSecondTaskStatus()+" "+targetRule.getSecondTaskHash().toUpperCase();
-            if(!taskGraph.containsKey(secondTaskKey)) {
-                taskGraph.put(secondTaskKey, new ArrayList<>());
-            }
-            switch (targetRule.getRuleRelation()) {
-                case RuleEnum.AFTER -> taskGraph.get(secondTaskKey).add(firstTaskKey);
-                case RuleEnum.BEFORE -> taskGraph.get(firstTaskKey).add(secondTaskKey);
-            }
-        } else {
-            String dateKey = "date "+targetRule.getDate();
-            if(!taskGraph.containsKey(dateKey)) {
-                taskGraph.put(dateKey, new ArrayList<>());
-            }
-            switch (targetRule.getRuleRelation()) {
-                case RuleEnum.AFTER -> taskGraph.get(dateKey).add(firstTaskKey);
-                case RuleEnum.BEFORE -> taskGraph.get(firstTaskKey).add(dateKey);
-            }
-        }
         addNaturalDatesOrderingEdges();
     }
 
@@ -69,7 +45,7 @@ public class TaskDependencyGraph {
             if(!visited.contains(node)) {
                 visited.add(node);
                 result.add(node);
-                if(dfs(taskGraph.get(node), visited, result, new HashSet<>(result))) break;
+                if(dfs(getNodeChildren(node), visited, result, new HashSet<>(result))) break;
                 result.pop();
             }
         }
@@ -113,7 +89,7 @@ public class TaskDependencyGraph {
                 path.add(node);
                 visited.add(node);
                 pathNodes.add(node);
-                if(dfs(taskGraph.get(node), visited, path, pathNodes)) return true;
+                if(dfs(getNodeChildren(node), visited, path, pathNodes)) return true;
                 else {
                     path.pop();
                     pathNodes.remove(node);
@@ -121,6 +97,10 @@ public class TaskDependencyGraph {
             }
         }
         return false;
+    }
+
+    private List<String> getNodeChildren(String node) {
+        return taskGraph.getOrDefault(node, new ArrayList<>());
     }
 
 }

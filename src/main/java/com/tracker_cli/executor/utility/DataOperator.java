@@ -74,11 +74,6 @@ public interface DataOperator {
             return false;
         }
 
-        if(createsDeadLockDependency(ruleDetail)) {
-            System.err.println("ERROR: cannot add the rule "+ruleDetail+", CAUSE ---> creating circular dependency.");
-            return false;
-        }
-
         AtomicBoolean overrideRule = new AtomicBoolean(false);
 
         Rule rule;
@@ -129,6 +124,10 @@ public interface DataOperator {
 
         if(!overrideRule.get()) rules.add(rule);
 
+        if(createsDeadLockDependency(ruleDetail, rules)) {
+            System.err.println("ERROR: cannot add the rule "+ruleDetail+", CAUSE ---> creating circular dependency.");
+            return false;
+        }
         try {
             RuleList ruleList = new RuleList();
             ruleList.setRuleList(rules);
@@ -348,17 +347,18 @@ public interface DataOperator {
     }
 
     //TODO implement circular dependency check method later
-    private static boolean createsDeadLockDependency(RuleDetail ruleDetail) {
-        List<Rule> ruleList;
-        try {
-            ruleList = listRules();
-        } catch (IOException e) {
-            System.err.println("ERROR: could not read rules data file: "+RULES_DATA_FILE.getAbsolutePath());
-            System.err.println(e.getMessage());
-            return false;
-        }
+    private static boolean createsDeadLockDependency(RuleDetail ruleDetail, List<Rule> ruleList) {
 
-        return CircularDependencyDetector.createsDeadLockDependency(ruleDetail, ruleList);
+        List<Rule> cycle = CircularDependencyDetector.createsDeadLockDependency(ruleDetail, ruleList);
+
+        if(!cycle.isEmpty()) {
+            System.err.println("ERROR: the rule you are attempting to add will introduce a circular dependency among tasks.");
+            System.err.println("ERROR: here is the list of rules causing the problem: ");
+            for(Rule rule : cycle) {
+                System.err.println("\t\t"+rule);
+            }
+        }
+        return !cycle.isEmpty();
     }
 
     private static List<Task> listTasks() throws IOException {

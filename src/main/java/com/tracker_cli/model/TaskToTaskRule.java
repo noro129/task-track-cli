@@ -34,9 +34,6 @@ public class TaskToTaskRule extends Rule{
 
     @Override
     public String toString() {
-        return "TaskToTaskRule{" +
-                "secondTaskStatus=" + secondTaskStatus +
-                ", secondTaskHash='" + secondTaskHash + '\'' +
-                "} " + super.toString();
+        return "RuleId={"+getId()+"} \t"+getFirstTaskStatus()+" "+getFirstTaskHash()+" "+getRuleRelation()+" "+secondTaskStatus+" "+secondTaskHash;
     }
 }

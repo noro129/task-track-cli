@@ -73,17 +73,17 @@ public class RuleDetail {
     @Override
     public String toString() {
         if(getDate()==null) return "RuleDetail{" +
-                "  firstTaskStatus=" + firstTaskStatus +
-                ", firstTaskHash='" + firstTaskHash + '\'' +
-                ", ruleRelation=" + ruleRelation +
-                ", secondTaskStatus=" + secondTaskStatus +
-                ", secondTaskHash='" + secondTaskHash + '\'' +
+                " " + firstTaskStatus +
+                " " + firstTaskHash +
+                " " + ruleRelation +
+                " " + secondTaskStatus +
+                " " + secondTaskHash +
                 '}';
         return "RuleDetail{" +
-                "  firstTaskStatus=" + firstTaskStatus +
-                ", firstTaskHash='" + firstTaskHash + '\'' +
-                ", ruleRelation=" + ruleRelation +
-                ", date=" + date +
+                " " + firstTaskStatus +
+                " " + firstTaskHash +
+                " " + ruleRelation +
+                " " + date +
                 '}';
     }
 }

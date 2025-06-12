@@ -25,8 +25,6 @@ public class TaskToDateRule extends Rule{
 
     @Override
     public String toString() {
-        return "TaskToDateRule{" +
-                "date=" + date +
-                "} " + super.toString();
+        return "RuleId={"+getId()+"} \t"+getFirstTaskStatus()+" "+getFirstTaskHash()+" "+getRuleRelation()+" "+date;
     }
 }
