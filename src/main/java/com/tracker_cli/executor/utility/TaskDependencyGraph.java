@@ -100,7 +100,18 @@ public class TaskDependencyGraph {
     }
 
     private List<String> getNodeChildren(String node) {
-        return taskGraph.getOrDefault(node, new ArrayList<>());
+        if(node.startsWith("date ") || node.startsWith("Done ")) return taskGraph.getOrDefault(node, new ArrayList<>());
+        else {
+            List<String> result = taskGraph.getOrDefault(node, new ArrayList<>());
+            if (node.startsWith("Started ")) {
+                if(taskGraph.containsKey("Inprogress "+node.substring(8))) result.add("Inprogress "+node.substring(8));
+                if(taskGraph.containsKey("Done "+node.substring(8))) result.add("Done "+node.substring(8));
+            }
+            if(node.startsWith("Inprogress ")) {
+                if(taskGraph.containsKey("Done "+node.substring(11))) result.add("Done "+node.substring(11));
+            }
+            return result;
+        }
     }
 
 }

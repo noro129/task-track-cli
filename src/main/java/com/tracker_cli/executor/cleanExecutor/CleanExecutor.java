@@ -11,7 +11,7 @@ public class CleanExecutor extends Executor {
 
     @Override
     public boolean execute(String[] arguments) {
-        System.out.println("cleaning "+actionTarget.toString()+" tasks.");
+        System.out.println("INFO: cleaning "+actionTarget.toString()+" tasks.");
         boolean showFirst = false;
         if (arguments.length == 1 && arguments[0].equals("--safe-check")) {
             showFirst=true;
