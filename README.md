@@ -28,3 +28,44 @@
 ## 📌 Notes
 
 ***TaskTrackCLI*** is terminal-first and designed for fast, rule-based task management. Useful for developers, teams, or anyone managing dependent workflows from the command line.
+
+
+## 📜 commands
+### add a task or a rule: 
+```
+add task --task-name <here is the task detail between ""> --task-status <TASK STATUS>
+```
+--task-status is optional (default: waiting)
+
+```
+add rule <task 1 status> <task 1 id> <rule relation> <task 2 status> <task 2 id>
+```
+Or
+```
+add rule <task 1 status> <task 1 id> <rule relation> <date:dd-MM-yyyy>
+```
+
+rule relation can be either : `after` or `before`.
+
+### list tasks or rules: 
+```
+list task -f <white space separated list of task status>
+```
+-f optional flag to list only task with specific status included in the given list
+
+```
+list rule --type <rule type> --task-hash <task id>
+```
+both flags are optional
+--type can be either `taskTotask` or `taskTodate`
+--task-hash to list only rules applied on a certain task
+
+### clean tasks: (bulk deletion of tasks with their associated rules)
+```
+clean <tasks to clean filter> --safe-check
+```
+tasks to clean filter to specify which tasks to be deleted, filter can be only one of the following :
+`ALL`, `WAITING`, `STARTED`, `INPROGRESS`, `DONE`
+
+--safe-check is an optional flag used to just list the tasks that are going to be deleted and their associated rules.
+
