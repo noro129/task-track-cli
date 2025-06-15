@@ -69,3 +69,16 @@ tasks to clean filter to specify which tasks to be deleted, filter can be only o
 
 --safe-check is an optional flag used to just list the tasks that are going to be deleted and their associated rules.
 
+### remove a task or a rule:
+```
+remove <task or rule> <task id or rule id> --safe-check
+```
+
+--safe-check is an optional flag used to list the task or rule that is going to be deleted (and its associated rules in case of task deletion).
+
+### update a task:
+```
+remove task <task id> --task-name <here the details of the task> --task-status <here specify the new task status>
+```
+
+at least one of the two arguments `--task-name` or `--task-status` should be used.
