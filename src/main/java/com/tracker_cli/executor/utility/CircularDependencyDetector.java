@@ -13,7 +13,7 @@ public interface CircularDependencyDetector {
         if(ruleDetail.getDate() == null) {
             relativeRulesList.addAll(filterRelatives(ruleDetail.getSecondTaskHash(), ruleList));
         }
-        TaskDependencyGraph taskGraph = new TaskDependencyGraph(relativeRulesList, ruleDetail);
+        TaskDependencyGraph taskGraph = new TaskDependencyGraph(relativeRulesList);
         Stack<String> cycle = taskGraph.retrieveExistingCycle();
         if(cycle.isEmpty()) {
             return new ArrayList<>();

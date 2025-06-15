@@ -8,7 +8,7 @@ import java.util.*;
 public class TaskDependencyGraph {
     private final Map<String, List<String>> taskGraph;
 
-    public TaskDependencyGraph(Set<Rule> ruleSet, RuleDetail targetRule) {
+    public TaskDependencyGraph(Set<Rule> ruleSet) {
         taskGraph = new HashMap<>();
         for(Rule rule : ruleSet) {
             String firstTaskKey = rule.getFirstTaskStatus().toString()+" "+ rule.getFirstTaskHash();
