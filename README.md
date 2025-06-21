@@ -21,8 +21,8 @@
 - Clean command for bulk deletions:
     - Delete all tasks with a specific status (e.g. all `Done` tasks)
     - Delete all rules associated with a specific task
-    - Delete all rules that have already been satisfied
-- List violated date rules that can no longer be satisfied (e.g. missed deadlines)
+    - Delete all rules that have already been satisfied (❌ not implemented yet)
+- List violated date rules that can no longer be satisfied (e.g. missed deadlines) (❌ not implemented yet)
 
 
 ## 📌 Notes
