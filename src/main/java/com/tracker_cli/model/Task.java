@@ -61,6 +61,15 @@ public class Task {
         this.taskTime = taskTime;
     }
 
+    public boolean isBefore(TaskStatusEnum taskStatus) {
+        return switch (taskStatus) {
+            case Waiting -> false;
+            case Started -> this.taskStatus==TaskStatusEnum.Waiting;
+            case InProgress -> this.taskStatus==TaskStatusEnum.Waiting || this.taskStatus==TaskStatusEnum.Started;
+            case Done -> this.taskStatus!=TaskStatusEnum.Done;
+        };
+    }
+
     @Override
     public String toString() {
         return "Task{" +
