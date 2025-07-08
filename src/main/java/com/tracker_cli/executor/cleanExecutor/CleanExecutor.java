@@ -13,15 +13,34 @@ public class CleanExecutor extends Executor {
     public boolean execute(String[] arguments) {
         System.out.println("INFO: cleaning "+actionTarget.toString()+" tasks.");
         boolean showFirst = false;
-        if (arguments.length == 1 && arguments[0].equals("--safe-check")) {
-            showFirst=true;
-            System.out.println("INFO: listing tasks selected to be deleted.");
-        } else if (arguments.length!=0) {
-            System.err.println("ERROR: invalid flag, valid flags are:" +
-                    "\t --safe-check \tOptional, check first tasks that are going to be deleted.");
-            return false;
+        boolean cleanSatisfiedTaskToTask = false;
+        boolean cleanSatisfiedTaskToDate = false;
+
+        for (String arg : arguments) {
+            if(arg.equals("-t")) cleanSatisfiedTaskToTask = true;
+            if(arg.equals("-d")) cleanSatisfiedTaskToDate = true;
+            if(arg.equals("--safe-check")) showFirst = true;
         }
 
-        return DataOperator.cleanTasks(showFirst, actionTarget);
+        if(actionTarget==CleanActionTarget.SATISFIED) {
+            if(cleanSatisfiedTaskToTask && cleanSatisfiedTaskToDate) {
+                System.err.println("ERROR: invalid arguments, no need to use both -t and -d at the same time");
+            }
+            if(!cleanSatisfiedTaskToTask || !cleanSatisfiedTaskToDate) {
+                return DataOperator.cleanSatisfied(showFirst, true, true);
+            }
+            return DataOperator.cleanSatisfied(showFirst, cleanSatisfiedTaskToTask, cleanSatisfiedTaskToDate);
+        } else {
+            if (arguments.length == 1 && arguments[0].equals("--safe-check")) {
+                showFirst=true;
+                System.out.println("INFO: listing tasks selected to be deleted.");
+            } else if (arguments.length!=0) {
+                System.err.println("ERROR: invalid flag, valid flags are:" +
+                        "\t --safe-check \tOptional, check first tasks that are going to be deleted.");
+                return false;
+            }
+
+            return DataOperator.cleanTasks(showFirst, actionTarget);
+        }
     }
 }

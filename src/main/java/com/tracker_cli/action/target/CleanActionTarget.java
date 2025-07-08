@@ -5,5 +5,6 @@ public enum CleanActionTarget {
     WAITING,
     STARTED,
     INPROGRESS,
-    DONE
+    DONE,
+    SATISFIED
 }

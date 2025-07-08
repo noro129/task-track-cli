@@ -69,6 +69,16 @@ tasks to clean filter to specify which tasks to be deleted, filter can be only o
 
 --safe-check is an optional flag used to just list the tasks that are going to be deleted and their associated rules.
 
+```
+clean --satisfied -t -d --safe-check
+```
+command to clean satisfied rules. You can use either -t or -d or none of them
+
+-t: for cleaning satisfied task to task rules
+-d: for cleaning satisfied task to date rules
+
+if none of the two flags are present, both satisfied task to task and date to task rules are cleaned
+
 ### remove a task or a rule:
 ```
 remove <task or rule> <task id or rule id> --safe-check

@@ -7,7 +7,7 @@ public interface CleanStatusMapper {
 
     static TaskStatusEnum getTaskStatusFromCleanTarget(CleanActionTarget actionTarget) {
         return switch (actionTarget) {
-            case CleanActionTarget.ALL -> null;
+            case CleanActionTarget.ALL, CleanActionTarget.SATISFIED -> null;
             case CleanActionTarget.DONE -> TaskStatusEnum.Done;
             case CleanActionTarget.INPROGRESS -> TaskStatusEnum.InProgress;
             case CleanActionTarget.STARTED -> TaskStatusEnum.Started;

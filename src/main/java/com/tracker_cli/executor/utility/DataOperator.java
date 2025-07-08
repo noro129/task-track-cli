@@ -209,6 +209,10 @@ public interface DataOperator {
         return true;
     }
 
+    static boolean cleanSatisfied(boolean showFirst, boolean taskToTask, boolean taskToDate) {
+        return true;
+    }
+
     static boolean updateTask(String taskHash, String newTaskMessage, TaskStatusEnum taskStatus) {
         List<Task> taskList;
         AtomicBoolean taskFound = new AtomicBoolean(false);
